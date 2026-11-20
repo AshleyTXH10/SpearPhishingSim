@@ -1,33 +1,56 @@
-from datetime import datetime
-from flask import Flask, request, send_from_directory
+from flask import Flask, render_template, render_template_string, redirect, url_for
+from flask import request, jsonify
 
 app = Flask(__name__)
 
+# Synthetic demonstration data
+stats = {
+    "test_visits": 0,
+    "password-clicks": 0,
+    "signup-clicks": 0,
+}
 
 @app.route("/")
-def index():
-  print(
-      f"[{datetime.now()}] Page opened | IP:"
-      f" {request.headers.get('X-Forwarded-For', request.remote_addr)}"
-  )
-  return send_from_directory(".", "training.html")
+def home():
+    stats["test_visits"] += 1
+    return render_template("index.html")
 
 
-@app.route("/<path:filename>")
-def static_files(filename):
-  return send_from_directory(".", filename)
+@app.route("/dashboard")
+def dashboard():
+    return render_template_string("""
+    <meta http-equiv="refresh" content="3">
+    <h1>Spear Phishing Dashboard</h1>
+
+    <h2>Web visits: {{ visits }}</h2>
+    <h2>Login clicks: {{ activity_a }}</h2>
+    <h2>Signup clicks: {{ activity_b }}</h2>
+    """,
+    visits=stats["test_visits"],
+    activity_a=stats["password-clicks"],
+    activity_b=stats["signup-clicks"])
 
 
-@app.route("/submit", methods=["POST"])
-def submit():
-  # Log only non-sensitive simulation telemetry (avoid storing raw passwords)
-  submitted_fields = list(request.form.keys())
-  print(
-      f"[{datetime.now()}] Form submitted | Fields: {submitted_fields} |"
-      f" IP: {request.headers.get('X-Forwarded-For', request.remote_addr)}"
-  )
-  return "Simulation recorded.", 200
+@app.route("/test-visit", methods=["POST"])
+def test_visit():
+    stats["test_visits"] += 1
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/record-interaction", methods=["POST"])
+def record_interaction():
+    data = request.get_json(silent=True) or {}
+    interaction = data.get("type")
+
+    if interaction == "password_click":
+        stats["password-clicks"] += 1
+    elif interaction == "signup_click":
+        stats["signup-clicks"] += 1
+    else:
+        return jsonify({"error": "Invalid interaction"}), 400
+
+    return jsonify({"success": True})
 
 
 if __name__ == "__main__":
-  app.run(host="127.0.0.1", port=5001)
+    app.run(debug=True)
