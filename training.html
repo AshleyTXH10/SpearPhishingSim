@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In or Sign Up</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      color: #1c1e21;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .content-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 450px;
+      width: 100%;
+      gap: 24px;
+    }
+
+    /* =========================================
+       CUSTOM LOGO / IMAGE STYLING
+       Adjust max-width or max-height below to fit your image
+       ========================================= */
+    .brand-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .brand-image {
+      max-width: 240px;  /* Adjust width as needed */
+      max-height: 100px; /* Adjust height as needed */
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+
+    .brand-tagline {
+      font-size: 1.25rem;
+      line-height: 1.4;
+      font-weight: 400;
+      color: #1c1e21;
+    }
+
+    /* Login Card Section */
+    .login-section {
+      width: 100%;
+      max-width: 396px;
+    }
+
+    .login-card {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+      padding: 20px 16px 24px;
+      text-align: center;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 1px solid #dddfe2;
+      border-radius: 6px;
+      outline: none;
+      color: #1d2129;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-field::placeholder {
+      color: #90949c;
+    }
+
+    .input-field:focus {
+      border-color: #1877f2;
+      box-shadow: 0 0 0 2px #e7f3ff;
+    }
+
+    .btn-login {
+      background-color: #1877f2;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      padding: 12px;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-login:hover {
+      background-color: #166fe5;
+    }
+
+    .forgot-link {
+      display: inline-block;
+      margin: 14px 0 4px;
+      color: #1877f2;
+      font-size: 0.875rem;
+      text-decoration: none;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #dadde1;
+      margin: 18px 0 22px;
+    }
+
+    .btn-create {
+      background-color: #42b72a;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-create:hover {
+      background-color: #36a420;
+    }
+
+    .sub-text {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.875rem;
+      color: #1c1e21;
+    }
+
+    .sub-text a {
+      font-weight: 600;
+      color: #1c1e21;
+      text-decoration: none;
+    }
+
+    .sub-text a:hover {
+      text-decoration: underline;
+    }
+
+    /* =========================================
+       SIGN UP MODAL STYLES
+       ========================================= */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .signup-modal {
+      background: #ffffff;
+      width: 100%;
+      max-width: 432px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid #dadde1;
+    }
+
+    .modal-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1c1e21;
+      line-height: 1.2;
+    }
+
+    .modal-header p {
+      font-size: 0.9rem;
+      color: #606770;
+      margin-top: 4px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.75rem;
+      line-height: 1;
+      color: #606770;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    .close-btn:hover {
+      color: #1c1e21;
+    }
+
+    .signup-form {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .name-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .signup-input {
+      width: 100%;
+      padding: 11px 12px;
+      font-size: 0.95rem;
+      background-color: #f5f6f7;
+      border: 1px solid #ccd0d5;
+      border-radius: 5px;
+      outline: none;
+      color: #1c1e21;
+    }
+
+    .signup-input:focus {
+      border-color: #1877f2;
+      background-color: #ffffff;
+    }
+
+    .field-label {
+      font-size: 0.75rem;
+      color: #606770;
+      margin-bottom: -6px;
+      font-weight: 500;
+    }
+
+    .dob-row, .gender-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dob-select {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 0.95rem;
+      border: 1px solid #ccd0d5;
+      border-radius: 5px;
+      background-color: #ffffff;
+      color: #1c1e21;
+    }
+
+    .gender-option {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border: 1px solid #ccd0d5;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .terms-text {
+      font-size: 0.7rem;
+      color: #777777;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    .btn-signup-submit {
+      background-color: #00a400;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.125rem;
+      font-weight: 700;
+      padding: 10px 32px;
+      cursor: pointer;
+      align-self: center;
+      margin: 8px 0 4px;
+      min-width: 194px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-signup-submit:hover {
+      background-color: #008f00;
+    }
+
+    /* Footer */
+    footer {
+      background: #ffffff;
+      padding: 20px;
+      color: #737373;
+      font-size: 0.75rem;
+    }
+
+    .footer-inner {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      list-style: none;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #dddfe2;
+      margin-bottom: 10px;
+    }
+
+    .footer-links a {
+      color: #737373;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="main-container">
+    <div class="content-wrapper">
+      
+      <!-- Top Brand / Intro Section -->
+      <div class="brand-section">
+        
+        <!-- ============================================================== -->
+        <!-- PUT YOUR IMAGE HERE:                                           -->
+        <!-- Replace "facebook_logo.png" with your image path or URL        -->
+        <!-- ============================================================== -->
+        <img 
+          src="facebook_logo.png" 
+          alt="Brand Logo" 
+          class="brand-image" 
+        />
+        <!-- ============================================================== -->
+
+        <p class="brand-tagline">Connect with friends and the world around you.</p>
+      </div>
+
+      <!-- Login Card Section -->
+      <div class="login-section">
+        <div class="login-card">
+          
+          <!-- ============================================================== -->
+          <!-- LOGIN POPUP MESSAGE:                                           -->
+          <!-- Edit the text inside alert('...') below to change the popup    -->
+          <!-- ============================================================== -->
+          <form class="login-form" action="#" method="POST" onsubmit="event.preventDefault(); alert('You fell for the phishing simulation');">
+            <input 
+              type="text" 
+              class="input-field" 
+              placeholder="Email or phone number" 
+              aria-label="Email or phone number" 
+              required 
+            />
+            <input 
+              type="password" 
+              class="input-field" 
+              placeholder="Password" 
+              aria-label="Password" 
+              required 
+            />
+            <button type="submit" class="btn-login">Log In</button>
+          </form>
+
+          <a href="#" class="forgot-link">Forgot password?</a>
+          <hr class="divider" />
+          <button type="button" class="btn-create" id="openSignupBtn">Create new account</button>
+        </div>
+
+        <p class="sub-text">
+          <a href="#">Create a Page</a> for a celebrity, brand or business.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- CREATE ACCOUNT MODAL POPUP                                     -->
+  <!-- ============================================================== -->
+  <div class="modal-overlay" id="signupModal">
+    <div class="signup-modal">
+      <div class="modal-header">
+        <div>
+          <h2>Sign Up</h2>
+          <p>It's quick and easy.</p>
+        </div>
+        <button type="button" class="close-btn" id="closeSignupBtn" aria-label="Close">&times;</button>
+      </div>
+
+      <!-- ============================================================== -->
+      <!-- SIGN UP POPUP MESSAGE:                                         -->
+      <!-- Edit the text inside alert('...') below to change the popup    -->
+      <!-- ============================================================== -->
+      <form class="signup-form" id="signupForm">
+        <div class="name-row">
+          <input type="text" class="signup-input" placeholder="First name" required />
+          <input type="text" class="signup-input" placeholder="Last name" required />
+        </div>
+
+        <input type="text" class="signup-input" placeholder="Mobile number or email" required />
+        <input type="password" class="signup-input" placeholder="New password" required />
+
+        <label class="field-label">Birthday</label>
+        <div class="dob-row">
+          <select class="dob-select" aria-label="Month">
+            <option>Jan</option><option>Feb</option><option>Mar</option>
+            <option>Apr</option><option>May</option><option>Jun</option>
+            <option>Jul</option><option>Aug</option><option>Sep</option>
+            <option>Oct</option><option>Nov</option><option>Dec</option>
+          </select>
+          <select class="dob-select" aria-label="Day">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+            <option>5</option><option>6</option><option>7</option><option>8</option>
+            <option>9</option><option>10</option><option>11</option><option>12</option>
+            <option>13</option><option>14</option><option>15</option><option>16</option>
+            <option>17</option><option>18</option><option>19</option><option>20</option>
+            <option>21</option><option>22</option><option>23</option><option>24</option>
+            <option>25</option><option>26</option><option>27</option><option>28</option>
+            <option>29</option><option>30</option><option>31</option>
+          </select>
+          <select class="dob-select" aria-label="Year">
+            <option>2008</option><option>2007</option><option>2006</option>
+            <option>2005</option><option>2004</option><option>2003</option>
+            <option>2002</option><option>2001</option><option>2000</option>
+            <option>1999</option><option>1998</option><option>1997</option>
+          </select>
+        </div>
+
+        <label class="field-label">Gender</label>
+        <div class="gender-row">
+          <label class="gender-option">
+            <span>Female</span>
+            <input type="radio" name="gender" value="female" required />
+          </label>
+          <label class="gender-option">
+            <span>Male</span>
+            <input type="radio" name="gender" value="male" />
+          </label>
+          <label class="gender-option">
+            <span>Custom</span>
+            <input type="radio" name="gender" value="custom" />
+          </label>
+        </div>
+
+        <p class="terms-text">
+          By clicking Sign Up, you agree to our Terms, Privacy Policy and Cookies Policy.
+        </p>
+
+        <button type="submit" class="btn-signup-submit">Sign Up</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <ul class="footer-links">
+        <li><a href="#">English (US)</a></li>
+        <li><a href="#">Español</a></li>
+        <li><a href="#">Français (France)</a></li>
+        <li><a href="#">中文(简体)</a></li>
+        <li><a href="#">Português (Brasil)</a></li>
+      </ul>
+      <p>© 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const openSignupBtn = document.getElementById('openSignupBtn');
+      const closeSignupBtn = document.getElementById('closeSignupBtn');
+      const signupModal = document.getElementById('signupModal');
+      const signupForm = document.getElementById('signupForm');
+
+      openSignupBtn.addEventListener('click', () => {
+        signupModal.classList.add('active');
+      });
+
+      closeSignupBtn.addEventListener('click', () => {
+        signupModal.classList.remove('active');
+      });
+
+      signupModal.addEventListener('click', (event) => {
+        if (event.target === signupModal) {
+          signupModal.classList.remove('active');
+        }
+      });
+
+      signupForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        alert('Account created!');
+        signupModal.classList.remove('active');
+      });
+    });
+  </script>
+
+</body>
+</html>
